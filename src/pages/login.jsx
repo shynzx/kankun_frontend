@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc"; // Ícono de Google
+import { FcGoogle } from "react-icons/fc";
+import { motion } from "framer-motion"; // Importamos animación
 
 function Login() {
     const [error, setError] = useState("");
@@ -11,25 +12,16 @@ function Login() {
         const email = e.target.email.value.trim();
         const password = e.target.password.value.trim();
 
-        let hasError = false;
-        let newInputError = { email: false, password: false };
+        let newInputError = { email: !email, password: !password };
+        setInputError(newInputError);
 
-        if (!email) {
-            newInputError.email = true;
-            hasError = true;
-        }
-        if (!password) {
-            newInputError.password = true;
-            hasError = true;
-        }
-        if (email.length > 40 || password.length > 40) {
-            setError("Máximo 40 caracteres por campo");
+        if (!email || !password) {
+            setError("Todos los campos son obligatorios");
             return;
         }
 
-        if (hasError) {
-            setError("Todos los campos son obligatorios");
-            setInputError(newInputError);
+        if (email.length > 40 || password.length > 40) {
+            setError("Máximo 40 caracteres por campo");
             return;
         }
 
@@ -43,6 +35,10 @@ function Login() {
         }
     };
 
+    const handleChange = (e) => {
+        setInputError((prev) => ({ ...prev, [e.target.name]: false }));
+    };
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-700/50 to-indigo-900/50 p-6">
             <div className="bg-violet-950/95 border border-gray-800 p-8 rounded-2xl shadow-xl w-96 mt-10">
@@ -53,27 +49,43 @@ function Login() {
                 {success && <p className="text-green-500 text-center mb-4">Inicio de sesión exitoso 🎉</p>}
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
-                    <div>
+                    <motion.div 
+                        animate={inputError.email ? { x: [-5, 5, -5, 5, 0] } : {}}
+                        transition={{ duration: 0.3 }}
+                    >
+                         <label htmlFor="email" className="block text-gray-300 mb-1">Correo electrónico</label>
                         <input 
                             type="email" 
                             name="email"
                             className={`w-full p-3 border ${inputError.email ? 'border-red-500' : 'border-gray-600'} rounded-lg bg-gray-700/50 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400`} 
                             placeholder="Correo electrónico"
                             maxLength="40"
+                            onChange={handleChange}
                         />
-                    </div>
-                    <div>
+                    </motion.div>
+
+                    <motion.div 
+                        animate={inputError.password ? { x: [-5, 5, -5, 5, 0] } : {}}
+                        transition={{ duration: 0.3 }}
+                    >
+                         <label htmlFor="password" className="block text-gray-300 mb-1">Contraseña</label>
                         <input 
                             type="password" 
                             name="password"
                             className={`w-full p-3 border ${inputError.password ? 'border-red-500' : 'border-gray-600'} rounded-lg bg-gray-700/50 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400`} 
                             placeholder="Contraseña"
                             maxLength="40"
+                            onChange={handleChange}
                         />
-                    </div>
-                    <button className="w-full p-3 bg-zinc-100 text-black font-semibold rounded-lg hover:bg-zinc-900 transition duration-300 hover:text-white">
+                    </motion.div>
+
+                    <motion.button 
+                        className="w-full p-3 bg-zinc-100 text-black font-semibold rounded-lg hover:bg-zinc-900 transition duration-300 hover:text-white"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
                         Iniciar sesión
-                    </button>
+                    </motion.button>
                 </form>
 
                 <p className="mt-6 text-center text-sm text-gray-400">
@@ -81,10 +93,14 @@ function Login() {
                 </p>
 
                 <div className="mt-4">
-                    <button className="w-full p-3 bg-zinc-900 text-white font-semibold rounded-lg hover:bg-zinc-100 transition duration-300 flex items-center justify-center gap-2 hover:text-black">
+                    <motion.button 
+                        className="w-full p-3 bg-zinc-900 text-white font-semibold rounded-lg hover:bg-zinc-100 transition duration-300 flex items-center justify-center gap-2 hover:text-black"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
                         <FcGoogle className="w-5 h-5" />
                         Iniciar con Google
-                    </button>
+                    </motion.button>
                 </div>
             </div>
         </div>

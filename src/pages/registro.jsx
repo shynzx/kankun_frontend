@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc"; // Ícono de Google
+import { FcGoogle } from "react-icons/fc";
+import { motion } from "framer-motion"; // Importamos animación
 
 function Registro() {
     const [error, setError] = useState("");
+    const [inputError, setInputError] = useState({ nombre: false, apellidos: false, email: false, password: false, confirmPassword: false });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -12,18 +14,18 @@ function Registro() {
         const password = e.target.password.value.trim();
         const confirmPassword = e.target.confirmPassword.value.trim();
 
-        if (!nombre || !apellidos || !email || !password || !confirmPassword) {
-            setError("Todos los campos son obligatorios");
-            return;
-        }
+        let newInputError = {
+            nombre: !nombre,
+            apellidos: !apellidos,
+            email: !email,
+            password: !password,
+            confirmPassword: !confirmPassword || password !== confirmPassword
+        };
 
-        if (password.length > 40 || confirmPassword.length > 40) {
-            setError("Máximo 40 caracteres por campo");
-            return;
-        }
+        setInputError(newInputError);
 
-        if (password !== confirmPassword) {
-            setError("Las contraseñas no coinciden");
+        if (Object.values(newInputError).some(val => val)) {
+            setError("Todos los campos son obligatorios y las contraseñas deben coincidir");
             return;
         }
 
@@ -40,12 +42,28 @@ function Registro() {
                 {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
-                    <input type="text" name="nombre" placeholder="Nombre" className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-200" />
-                    <input type="text" name="apellidos" placeholder="Apellidos" className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-200" />
-                    <input type="email" name="email" placeholder="Correo electrónico" className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-200" />
-                    <input type="password" name="password" placeholder="Contraseña" className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-200" maxLength="40" />
-                    <input type="password" name="confirmPassword" placeholder="Confirmar contraseña" className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700/50 text-gray-200" maxLength="40" />
-                    <button className="w-full p-3 bg-zinc-100 text-black font-semibold rounded-lg hover:bg-zinc-900 transition duration-300 hover:text-white">Registrarse</button>
+                    {[{ name: 'nombre', placeholder: 'Nombre Completo' }, { name: 'email', placeholder: 'Correo electrónico' }, { name: 'password', placeholder: 'Contraseña' }, { name: 'confirmPassword', placeholder: 'Confirmar contraseña' }].map((field, index) => (
+                        <motion.div 
+                            key={index} 
+                            animate={inputError[field.name] ? { x: [-5, 5, -5, 5, 0] } : {}}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <input 
+                                type={field.name.includes("password") ? "password" : "text"} 
+                                name={field.name} 
+                                placeholder={field.placeholder} 
+                                className={`w-full p-3 border ${inputError[field.name] ? 'border-red-500' : 'border-gray-600'} rounded-lg bg-gray-700/50 text-gray-200`} 
+                                maxLength={field.name.includes("password") ? 40 : undefined}
+                            />
+                        </motion.div>
+                    ))}
+                    <motion.button 
+                        className="w-full p-3 bg-zinc-100 text-black font-semibold rounded-lg hover:bg-zinc-900 transition duration-300 hover:text-white"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        Registrarse
+                    </motion.button>
                 </form>
 
                 <p className="mt-6 text-center text-sm text-gray-400">
@@ -53,10 +71,14 @@ function Registro() {
                 </p>
 
                 <div className="mt-4">
-                    <button className="w-full p-3 bg-zinc-900 text-white font-semibold rounded-lg hover:bg-zinc-100 transition duration-300 flex items-center justify-center gap-2 hover:text-black">
+                    <motion.button 
+                        className="w-full p-3 bg-zinc-900 text-white font-semibold rounded-lg hover:bg-zinc-100 transition duration-300 flex items-center justify-center gap-2 hover:text-black"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
                         <FcGoogle className="w-5 h-5" />
                         Registrarse con Google
-                    </button>
+                    </motion.button>
                 </div>
             </div>
         </div>
